@@ -3,7 +3,7 @@ Launch a full teacher-student training experiment.
 """
 
 from teacher.teacher_agent import TeacherAgent
-from student.student_ppo import StudentPPO
+from student.train_ppo_student import StudentPPO
 from training.train_loop import Trainer
 
 if __name__ == "__main__":
