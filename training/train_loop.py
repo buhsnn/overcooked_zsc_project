@@ -25,3 +25,4 @@ class Trainer:
             self.teacher.update(lp, novelty, unsat)
 
             print(f" → LP={lp:.2f}, Novelty={novelty:.2f}, Unsat={unsat:.2f}")
+
