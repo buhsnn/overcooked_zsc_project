@@ -2,7 +2,7 @@
 Launch a full teacher-student training experiment.
 """
 
-from teacher.teacher_agent import TeacherAgent
+from teacher.teacher_pair import TeacherAgent
 from student.train_ppo_student import StudentPPO
 from training.train_loop import Trainer
 
