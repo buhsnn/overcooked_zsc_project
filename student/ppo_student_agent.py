@@ -1,47 +1,76 @@
-import numpy as np
+import os
 from stable_baselines3 import PPO
-
-from overcooked_ai_py.agents.agent import Agent
-from overcooked_ai_py.mdp.actions import Action
+from env.overcooked_wrapper import OvercookedGym
 
 
-class PPOStudentAgent(Agent):
+class PPOStudentAgent:
     """
-    Wrapper SB3 PPO -> Agent Overcooked compatible.
-
-    - model : PPO (stable-baselines3)
-    - featurize_fn : (state) -> (obs_p0, obs_p1)
-    - agent_index : 0 ou 1
+    Custom wrapper for a student PPO agent.
+    Exposes the following methods:
+        - train_on_layout(layout, timesteps, eval_episodes)
+        - evaluate(layout, episodes)
     """
 
-    def __init__(self, model: PPO, featurize_fn, agent_index: int):
-        super().__init__()
-        self.model = model
-        self.featurize_fn = featurize_fn
-        self.agent_index = agent_index
-        self.mdp = None
+    def __init__(
+        self,
+        model_path: str = None,
+        verbose: int = 1
+    ):
+        self.verbose = verbose
+        self.model_path = model_path
 
-    def reset(self):
-        
-        pass
+        # PPO model (initialized as None)
+        self.model = None
 
-    def set_mdp(self, mdp):
-        self.mdp = mdp
+    # -------------------------------------------------------------- #
+    def _init_model(self, layout_name: str):
+        """Initialize PPO for a given layout."""
+        env = OvercookedGym(layout_name, agent_index=0)
 
-    def action(self, state):
-        
-        obs_p0, obs_p1 = self.featurize_fn(state)
+        self.model = PPO(
+            "MlpPolicy",
+            env,
+            verbose=self.verbose,
+        )
 
-        obs = obs_p0 if self.agent_index == 0 else obs_p1
+    # -------------------------------------------------------------- #
+    def train_on_layout(self, layout_name: str, total_timesteps: int, eval_episodes: int = 5):
+        """
+        1. Initialize PPO on this layout
+        2. Train PPO for a specified number of timesteps
+        3. Evaluate PPO performance
+        """
+        if self.verbose:
+            print(f"\n[Student] Training PPO on layout: {layout_name}")
 
-        
-        obs_batch = obs.reshape(1, -1)
+        # Initialize the PPO model
+        self._init_model(layout_name)
 
-        action_idx, _ = self.model.predict(obs_batch, deterministic=True)
+        # Train the agent
+        self.model.learn(total_timesteps=total_timesteps)
 
-        if hasattr(action_idx, "item"):
-            action_idx = int(action_idx)
+        # Evaluate the trained model
+        avg_return = self.evaluate(layout_name, eval_episodes)
+        return avg_return
 
-        oc_action = Action.INDEX_TO_ACTION[action_idx]
+    # -------------------------------------------------------------- #
+    def evaluate(self, layout_name: str, episodes: int = 5):
+        """Evaluate PPO policy on a given number of episodes."""
+        env = OvercookedGym(layout_name, agent_index=0)
 
-        return oc_action, {}
+        total_reward = 0
+        for _ in range(episodes):
+            obs, _ = env.reset()
+            done, truncated = False, False
+
+            while not (done or truncated):
+                # Get action prediction from the trained model
+                action, _ = self.model.predict(obs, deterministic=True)
+                obs, reward, done, truncated, _ = env.step(action)
+                total_reward += reward
+
+        avg_return = total_reward / episodes
+        if self.verbose:
+            print(f"[Student] Evaluation return on {layout_name}: {avg_return:.2f}")
+
+        return avg_return
