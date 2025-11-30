@@ -139,13 +139,6 @@ You can display all available layouts in the notebook by listing the .layout fil
 - The MediumLevelActionManager is recomputed at reset → slow first launch.
 - A teacher policy (planned next step) can accelerate learning in zero-shot settings.
 
-# 8. Next Steps (future work) ???? i dont know the step
-- Implement a Teacher Agent (expert or heuristic)
 
-- Add Student–Teacher training loops
 
 - Evaluate zero-shot coordination with unseen partners
-
-
-# 9 What i do
-
