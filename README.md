@@ -145,3 +145,7 @@ You can display all available layouts in the notebook by listing the .layout fil
 - Add Student–Teacher training loops
 
 - Evaluate zero-shot coordination with unseen partners
+
+
+# 9 What i do
+

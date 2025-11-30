@@ -5,76 +5,97 @@ from overcooked_ai_py.mdp.overcooked_mdp import OvercookedGridworld
 from overcooked_ai_py.mdp.overcooked_env import OvercookedEnv
 from overcooked_ai_py.mdp.actions import Action
 
+from teacher.teacher_pair import make_teacher_env_and_pair
+
 
 class OvercookedGym(gym.Env):
     """
-    SB3-compatible wrapper around the official OvercookedEnv.
+    SB3-compatible environment where:
 
-    - use OvercookedGridworld.from_layout_name(..., old_dynamics=True)
-    - use env.featurize_state_mdp (same features as BC / PPO rllib)
-    - Observation = features of the agent 0 only (vector 1D)
-    - Action = Discrete(6) → map into Action.INDEX_TO_ACTION
+    - PPO controls ONE agent (agent_index = 0 or 1)
+    - Partner is a fixed TEACHER (GreedyHumanModel)
     """
 
     metadata = {"render_modes": []}
 
-    def __init__(self, layout_name="cramped_room", horizon=400):
+    def __init__(self, layout_name="cramped_room", horizon=400, agent_index=0):
         super().__init__()
+        assert agent_index in [0, 1], "agent_index must be 0 or 1"
+        self.agent_index = agent_index
 
-        # MDP official
+        # ========================
+        # Base Overcooked Env
+        # ========================
         self.mdp = OvercookedGridworld.from_layout_name(
             layout_name,
-            old_dynamics=True
+            old_dynamics=True,
         )
-
-        # Env official OvercookedEnv
         self.env = OvercookedEnv.from_mdp(self.mdp, horizon=horizon)
-
-        # Reset initial 
         self.env.reset()
 
-        # *** OBSERVATIONS ***
-        # Use oficial function of featurization
-        # featurize_state_mdp(state) -> (obs_p0, obs_p1)
+        # ========================
+        # Teacher partner (GreedyHumanModel)
+        # ========================
+        _, teacher_pair = make_teacher_env_and_pair(layout_name, horizon)
+        self.teacher0 = teacher_pair.agents[0]
+        self.teacher1 = teacher_pair.agents[1]
+
+        # ========================
+        # Observation space
+        # ========================
         obs_p0, obs_p1 = self.env.featurize_state_mdp(self.env.state)
+        my_obs = obs_p0 if self.agent_index == 0 else obs_p1
 
         self.observation_space = gym.spaces.Box(
             low=-np.inf,
             high=np.inf,
-            shape=obs_p0.shape,
+            shape=my_obs.shape,
             dtype=np.float32,
         )
 
-        # *** ACTIONS ***
-        # 6 actions (N, S, E, W, STAY, INTERACT) →  0..5
+        # ========================
+        # Action space (6 actions)
+        # ========================
         self.action_space = gym.spaces.Discrete(len(Action.ALL_ACTIONS))
 
+    # ----------------------------------------------------
+
     def reset(self, seed=None, options=None):
-        # Reset env officiel
+        super().reset(seed=seed)
         self.env.reset()
+
         obs_p0, obs_p1 = self.env.featurize_state_mdp(self.env.state)
-        return obs_p0, {}
+        my_obs = obs_p0 if self.agent_index == 0 else obs_p1
+
+        return my_obs.astype(np.float32), {}
+
+    # ----------------------------------------------------
 
     def step(self, action):
-        """
-        action : int ∈ [0..5] (SB3)
-        We convertit it to  Action.INDEX_TO_ACTION[action],
-        then we apply the same action to the two agents (student self-play simple).
-        """
 
-        # Sécurity
+        # Convert numpy scalar to int
         if hasattr(action, "item"):
             action = int(action)
 
-        oc_action = Action.INDEX_TO_ACTION[action]
+        # Student action
+        my_action = Action.INDEX_TO_ACTION[action]
 
-        
-        next_state, reward, done, info = self.env.step(
-            (oc_action, oc_action)
-        )
+        # Teacher actions
+        teacher_a0, _ = self.teacher0.action(self.env.state)
+        teacher_a1, _ = self.teacher1.action(self.env.state)
 
-        
+        # Joint action: student on one side, teacher on the other
+        if self.agent_index == 0:
+            joint_action = (my_action, teacher_a1)
+        else:
+            joint_action = (teacher_a0, my_action)
+
+        # Step env
+        next_state, reward, done, info = self.env.step(joint_action)
+
+        # Featurize
         obs_p0, obs_p1 = self.env.featurize_state_mdp(next_state)
+        my_obs = obs_p0 if self.agent_index == 0 else obs_p1
 
-        # Gymnasium API 
-        return obs_p0, reward, done, False, info
+        # Gymnasium API: (obs, reward, terminated, truncated, info)
+        return my_obs.astype(np.float32), reward, done, False, info

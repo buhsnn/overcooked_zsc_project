@@ -1,5 +1,3 @@
-# teacher/teacher_agent.py
-
 from overcooked_ai_py.agents.agent import GreedyHumanModel, AgentPair
 from overcooked_ai_py.mdp.overcooked_mdp import OvercookedGridworld
 from overcooked_ai_py.mdp.overcooked_env import OvercookedEnv

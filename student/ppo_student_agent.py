@@ -7,11 +7,10 @@ from overcooked_ai_py.mdp.actions import Action
 
 class PPOStudentAgent(Agent):
     """
-    Wrapper for using a model SB3 PPO
-    as agent Overcooked compatible AgentEvaluator.
+    Wrapper SB3 PPO -> Agent Overcooked compatible.
 
-    - model : instance PPO (stable-baselines3)
-    - featurize_fn : fonction (state) -> (obs_p0, obs_p1)
+    - model : PPO (stable-baselines3)
+    - featurize_fn : (state) -> (obs_p0, obs_p1)
     - agent_index : 0 ou 1
     """
 
@@ -27,33 +26,22 @@ class PPOStudentAgent(Agent):
         pass
 
     def set_mdp(self, mdp):
-        # called by AgentEvaluator / AgentPair
         self.mdp = mdp
 
     def action(self, state):
-        """
-        take an OvercookedState
-        → featurize
-        → passe in the model PPO
-        → return an action Overcooked (Direction or "interact").
-        """
+        
         obs_p0, obs_p1 = self.featurize_fn(state)
 
-        if self.agent_index == 0:
-            obs = obs_p0
-        else:
-            obs = obs_p1
+        obs = obs_p0 if self.agent_index == 0 else obs_p1
 
         
         obs_batch = obs.reshape(1, -1)
 
         action_idx, _ = self.model.predict(obs_batch, deterministic=True)
 
-        
         if hasattr(action_idx, "item"):
             action_idx = int(action_idx)
 
         oc_action = Action.INDEX_TO_ACTION[action_idx]
 
-        
         return oc_action, {}
