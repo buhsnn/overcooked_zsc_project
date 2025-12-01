@@ -1,8 +1,10 @@
 # training/trainer.py
 
+import datetime
 import json
 import random
 import time
+from pathlib import Path
 from typing import Dict, List
 
 from student.train_ppo_student import StudentPPO
@@ -26,6 +28,7 @@ class Trainer:
         temperature: float = 1.0,
         s_threshold: float = 2.0,
         student_verbose: int = 1,
+        log_dir: str = "./logs",
     ):
         self.n_iterations = n_iterations
         self.train_steps_per_iter = train_steps_per_iter
@@ -45,6 +48,8 @@ class Trainer:
 
         # Log history
         self.history: List[Dict] = []
+        self.log_dir = Path(log_dir) / datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        self.log_dir.mkdir(parents=True, exist_ok=True)
 
     # ---------------------------------------------------------------------- #
     def run(self):
@@ -108,7 +113,12 @@ class Trainer:
                 # self.teacher.update_after_episode(layout, avg_return)
 
             # ---------------------------
-            # 4) Log
+            # 4) Validation
+            # ---------------------------
+            self.eval()
+
+            # ---------------------------
+            # 5) Log
             # ---------------------------
             self.history.append(
                 {
@@ -118,9 +128,13 @@ class Trainer:
                     "timestamp": time.time(),
                 }
             )
+            with open(self.log_dir / "train.json", "w") as f:
+                json.dump(self.history, f, indent=4)
+            
 
         print("\n===== TRAINING FINISHED =====\n")
         return self.history
+
 
     def eval(self):
         avg_return_dict = {}
@@ -134,7 +148,7 @@ class Trainer:
         avg_return_dict["overall_avg"] = sum(avg_return_dict.values()) / len(avg_return_dict)
         
         # Save as json
-        with open("evaluation_results.json", "w") as f:
+        with open(self.log_dir / f"eval_{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}.json", "w") as f:
             json.dump(avg_return_dict, f, indent=4)
         
         return avg_return_dict

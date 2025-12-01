@@ -14,6 +14,6 @@ if __name__ == "__main__":
     # debugpy.wait_for_client()
     # print("Debugger attached.")
     
-    trainer = Trainer(buffer_size=4)
+    trainer = Trainer(n_iterations=50, buffer_size=3)
     trainer.run()
     trainer.eval()
