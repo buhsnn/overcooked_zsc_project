@@ -79,7 +79,7 @@ class TeacherAgent:
     def __init__(
         self,
         buffer_size: int = 50,
-        w_regret: float = 1.0,
+        w_regret: float = 0.01,
         w_novelty: float = 0.5,
         w_progress: float = 0.5,
         temperature: float = 1.0,
@@ -144,7 +144,7 @@ class TeacherAgent:
         progresses = []
         for rec in recs:
             rec.regret = self._compute_regret(rec)
-            rec.novelty = self._compute_novelty(rec, recs)
+            rec.novelty = self._compute_novelty(rec, recs)  # TODO: exclude self
             rec.progress = self._compute_progress(rec)
 
             regrets.append(rec.regret)
@@ -152,26 +152,51 @@ class TeacherAgent:
             progresses.append(rec.progress)
 
         # Normalization (simple z-score to avoid very different scales)
-        def normalize(xs):
-            xs = np.array(xs, dtype=float)
-            if np.all(xs == 0):
-                return np.zeros_like(xs)
-            mean = xs.mean()
-            std = xs.std() if xs.std() > 1e-8 else 1.0
-            return (xs - mean) / std
+        # def normalize(xs):
+        #     xs = np.array(xs, dtype=float)
+        #     if np.all(xs == 0):
+        #         return np.zeros_like(xs)
+        #     mean = xs.mean()
+        #     std = xs.std() if xs.std() > 1e-8 else 1.0
+        #     return (xs - mean) / std
 
-        n_regret = normalize(regrets)
-        n_novelty = normalize(novelties)
-        n_progress = normalize(progresses)
+        # n_regret = normalize(regrets)
+        # n_novelty = normalize(novelties)
+        # n_progress = normalize(progresses)
 
         for i, rec in enumerate(recs):
             rec.score = (
-                self.w_regret * n_regret[i]
-                + self.w_novelty * n_novelty[i]
-                + self.w_progress * n_progress[i]
+                self.w_regret * regrets[i]
+                + self.w_novelty * novelties[i]
+                + self.w_progress * progresses[i]
             )
+            # rec.score = (
+            #     self.w_regret * n_regret[i]
+            #     + self.w_novelty * n_novelty[i]
+            #     + self.w_progress * n_progress[i]
+            # )
+    
+    def _compute_score(self, rec: LevelRecord) -> float:
+        rec.regret = self._compute_regret(rec)
+        rec.novelty = self._compute_novelty(rec, self.buffer.all_records())
+        rec.progress = self._compute_progress(rec)
+        score = (
+            self.w_regret * rec.regret
+            + self.w_novelty * rec.novelty
+            + self.w_progress * rec.progress
+        )
+        return score
 
     # --------------------- public API --------------------- #
+
+    def generate_layout(self) -> str:
+        """
+        Choose a layout from layout pool.
+        """
+        layout = random.choice(AVAILABLE_LAYOUTS)
+        while layout in list(self.buffer.levels.keys()):
+            layout = random.choice(AVAILABLE_LAYOUTS)
+        return layout            
 
     def sample_layout(self) -> str:
         """
@@ -199,3 +224,19 @@ class TeacherAgent:
         # Option: create a mutated layout and add it to the buffer
         mutated = mutate_layout(layout_name)
         self.buffer.ensure_level(mutated)
+        
+    
+    def update_after_episode_wo_mutate(self, layout_name: str, episode_return: float):
+        """Call this after training/evaluating the student on a layout."""
+        self.buffer.update_return(layout_name, episode_return)
+
+        # Update memory for progress (not mandatory, but useful if you want another progress style)
+        prev = self.last_return.get(layout_name, None)
+        self.last_return[layout_name] = episode_return
+        self.buffer.ensure_level(layout_name)
+        
+
+    def compute_score(self, layout_name: str) -> float:
+        """Compute the composite score of a given layout."""
+        rec = self.buffer.ensure_level(layout_name)
+        return self._compute_score(rec)

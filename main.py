@@ -2,13 +2,18 @@
 Launch a full teacher-student training experiment.
 """
 
-from teacher.teacher_pair import TeacherAgent
+import debugpy
+
 from student.train_ppo_student import StudentPPO
-from training.train_loop import Trainer
+from teacher.teacher_agent import TeacherAgent
+from training.trainer import Trainer
 
 if __name__ == "__main__":
-    teacher = TeacherAgent()
-    student = StudentPPO()
-
-    trainer = Trainer(teacher, student)
-    trainer.run(iterations=5)
+    # debugpy.listen(5678)
+    # print("Waiting for debugger attach...")
+    # debugpy.wait_for_client()
+    # print("Debugger attached.")
+    
+    trainer = Trainer(buffer_size=4)
+    trainer.run()
+    trainer.eval()

@@ -1,10 +1,13 @@
 # training/trainer.py
 
+import json
+import random
 import time
-from typing import List, Dict
+from typing import Dict, List
 
-from teacher.teacher_agent import TeacherAgent
 from student.train_ppo_student import StudentPPO
+from teacher.teacher_agent import TeacherAgent
+from utils.layout_utils import EVAL_LAYOUTS
 
 
 class Trainer:
@@ -17,14 +20,16 @@ class Trainer:
         n_iterations: int = 20,
         train_steps_per_iter: int = 20_000,
         buffer_size: int = 50,
-        w_regret: float = 1.0,
+        w_regret: float = 0.01,
         w_novelty: float = 0.5,
         w_progress: float = 0.5,
         temperature: float = 1.0,
+        s_threshold: float = 2.0,
         student_verbose: int = 1,
     ):
         self.n_iterations = n_iterations
         self.train_steps_per_iter = train_steps_per_iter
+        self.s_threshold = s_threshold
 
         # Teacher
         self.teacher = TeacherAgent(
@@ -53,26 +58,54 @@ class Trainer:
             print("=" * 50)
             print(f"[ITERATION {it}]")
 
-            # ---------------------------
-            # 1) Teacher chooses a layout
-            # ---------------------------
-            layout = self.teacher.sample_layout()
-            print(f"[Teacher] Selected layout: {layout}")
+            if random.random() < 0.5:
+                # ---------------------------
+                # 1) Generate random layout
+                # ---------------------------
+                layout = self.teacher.generate_layout()
+                print(f"[Teacher] Generated layout: {layout}")
+                
+                # ---------------------------
+                # 2) Evaluate agent without training
+                # ---------------------------
+                avg_return = self.student.train_on_layout(
+                    layout_name=layout,
+                    total_timesteps=0,
+                    eval_episodes=5,
+                )
+                
+                # ---------------------------
+                # 3) Compute score of layout, and add to buffer
+                # ---------------------------
+                score = self.teacher.compute_score(layout)
+                if score >= self.s_threshold:
+                    print(f"[Teacher] Adding layout {layout} to buffer with score {score:.2f}")
+                    self.teacher.update_after_episode_wo_mutate(layout, avg_return)
+                
+            else:
+                # ---------------------------
+                # 1) Teacher chooses a layout from buffer
+                # ---------------------------
+                layout = self.teacher.sample_layout()
+                print(f"[Teacher] Selected layout: {layout}")
 
-            # ---------------------------
-            # 2) Student trains its PPO on this layout
-            # ---------------------------
-            avg_return = self.student.train_on_layout(
-                layout_name=layout,
-                total_timesteps=self.train_steps_per_iter,
-                eval_episodes=5,
-            )
-            print(f"[Student] Avg return on {layout}: {avg_return:.2f}")
+                # ---------------------------
+                # 2) Student trains its PPO on this layout
+                # ---------------------------
+                avg_return = self.student.train_on_layout(
+                    layout_name=layout,
+                    total_timesteps=self.train_steps_per_iter,
+                    eval_episodes=5,
+                )
+                print(f"[Student] Avg return on {layout}: {avg_return:.2f}")
 
-            # ---------------------------
-            # 3) Teacher updates its stats
-            # ---------------------------
-            self.teacher.update_after_episode(layout, avg_return)
+                # ---------------------------
+                # 3) Teacher updates its stats
+                # ---------------------------
+                self.teacher.update_after_episode_wo_mutate(layout, avg_return)
+                
+                # TODO: After mid report, add mutation
+                # self.teacher.update_after_episode(layout, avg_return)
 
             # ---------------------------
             # 4) Log
@@ -88,3 +121,21 @@ class Trainer:
 
         print("\n===== TRAINING FINISHED =====\n")
         return self.history
+
+    def eval(self):
+        avg_return_dict = {}
+        for layout in EVAL_LAYOUTS:
+            avg_return = self.student.train_on_layout(
+                layout_name=layout,
+                total_timesteps=0,
+                eval_episodes=5,
+            )
+            avg_return_dict[layout] = avg_return
+        avg_return_dict["overall_avg"] = sum(avg_return_dict.values()) / len(avg_return_dict)
+        
+        # Save as json
+        with open("evaluation_results.json", "w") as f:
+            json.dump(avg_return_dict, f, indent=4)
+        
+        return avg_return_dict
+        

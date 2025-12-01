@@ -10,9 +10,11 @@ AVAILABLE_LAYOUTS = [
     "asymmetric_advantages",
     "coordination_ring",
     "forced_coordination",
-    "counter_circuit_o_1order",
 ]
 
+EVAL_LAYOUTS = [
+    "counter_circuit_o_1order",
+]
 
 # Approximate "optimal" value per layout (for regret).
 # You can adjust these values later.
@@ -25,7 +27,7 @@ APPROX_OPTIMAL_RETURN = {
 }
 
 
-def one_hot_layout(layout_name: str) -> np.ndarray:
+def one_hot_layout(layout_name: str) -> np.ndarray:  # TODO: rather than one-hot, use embedding
     """Encode a layout as a simple one-hot vector for 'novelty'."""
     vec = np.zeros(len(AVAILABLE_LAYOUTS), dtype=float)
     if layout_name in AVAILABLE_LAYOUTS:
