@@ -87,7 +87,7 @@ class StudentPPO:
                 action, _ = self.model.predict(obs, deterministic=True)
                 obs, reward, done, truncated, info = env.step(action)
                 total += reward
-
+            
             returns.append(total)
 
         # Return the mean episodic return over all evaluation episodes
