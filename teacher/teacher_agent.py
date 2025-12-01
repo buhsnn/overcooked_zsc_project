@@ -79,12 +79,14 @@ class TeacherAgent:
     def __init__(
         self,
         buffer_size: int = 50,
+        staleness_coeff: float = 0.5,
         w_regret: float = 0.01,
         w_novelty: float = 0.5,
-        w_progress: float = 0.5,
+        w_progress: float = -0.1,
         temperature: float = 1.0,
     ):
         self.buffer = LevelBuffer(max_size=buffer_size)
+        self.staleness_coeff = staleness_coeff
         self.w_regret = w_regret
         self.w_novelty = w_novelty
         self.w_progress = w_progress
@@ -98,7 +100,7 @@ class TeacherAgent:
         self._init_buffer()
 
     def _init_buffer(self):
-        initial_layouts = AVAILABLE_LAYOUTS[:3]  # can be extended later
+        initial_layouts = AVAILABLE_LAYOUTS[:int(self.buffer.max_size * self.staleness_coeff)]  # can be extended later
         for name in initial_layouts:
             rec = self.buffer.ensure_level(name)
             # Initialize with a small fake return (0) to start
@@ -176,17 +178,6 @@ class TeacherAgent:
             #     + self.w_progress * n_progress[i]
             # )
     
-    def _compute_score(self, rec: LevelRecord) -> float:
-        rec.regret = self._compute_regret(rec)
-        rec.novelty = self._compute_novelty(rec, self.buffer.all_records())
-        rec.progress = self._compute_progress(rec)
-        score = (
-            self.w_regret * rec.regret
-            + self.w_novelty * rec.novelty
-            + self.w_progress * rec.progress
-        )
-        return score
-
     # --------------------- public API --------------------- #
 
     def generate_layout(self) -> str:
@@ -207,7 +198,6 @@ class TeacherAgent:
         if not recs:
             return random.choice(AVAILABLE_LAYOUTS)
 
-        self._update_scores()
         scores = np.array([r.score for r in recs], dtype=float)
         probs = softmax(scores, temperature=self.temperature)
         idx = np.random.choice(len(recs), p=probs)
@@ -224,7 +214,6 @@ class TeacherAgent:
         # Option: create a mutated layout and add it to the buffer
         mutated = mutate_layout(layout_name)
         self.buffer.ensure_level(mutated)
-        
     
     def update_after_episode_wo_mutate(self, layout_name: str, episode_return: float):
         """Call this after training/evaluating the student on a layout."""
@@ -233,10 +222,33 @@ class TeacherAgent:
         # Update memory for progress (not mandatory, but useful if you want another progress style)
         prev = self.last_return.get(layout_name, None)
         self.last_return[layout_name] = episode_return
-        self.buffer.ensure_level(layout_name)
-        
-
-    def compute_score(self, layout_name: str) -> float:
-        """Compute the composite score of a given layout."""
-        rec = self.buffer.ensure_level(layout_name)
-        return self._compute_score(rec)
+        self._update_scores()
+    
+    def compute_score(self, layout_name, returns) -> float:
+        rec = LevelRecord(
+            layout_name=layout_name,
+            embedding=one_hot_layout(layout_name),
+            returns=returns,
+        )
+        rec.regret = self._compute_regret(rec)
+        rec.novelty = self._compute_novelty(rec, self.buffer.all_records())
+        rec.progress = self._compute_progress(rec)
+        score = (
+            self.w_regret * rec.regret
+            + self.w_novelty * rec.novelty
+            + self.w_progress * rec.progress
+        )
+        return score
+    
+    def get_score_snapshot(self) -> Dict[str, float]:
+        """Get a snapshot of all layout's regret, novelty, progress, score."""
+        snapshot = {}
+        recs = self.buffer.all_records()
+        for rec in recs:
+            snapshot[rec.layout_name] = {
+                "regret": rec.regret,
+                "novelty": rec.novelty,
+                "progress": rec.progress,
+                "score": rec.score,
+            }
+        return snapshot

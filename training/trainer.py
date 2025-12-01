@@ -20,11 +20,11 @@ class Trainer:
     def __init__(
         self,
         n_iterations: int = 20,
-        train_steps_per_iter: int = 20_000,
+        train_steps_per_iter: int = 1_000,
         buffer_size: int = 50,
         w_regret: float = 0.01,
         w_novelty: float = 0.5,
-        w_progress: float = 0.5,
+        w_progress: float = -0.1,
         temperature: float = 1.0,
         s_threshold: float = 2.0,
         student_verbose: int = 1,
@@ -48,7 +48,7 @@ class Trainer:
 
         # Log history
         self.history: List[Dict] = []
-        self.log_dir = Path(log_dir) / datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        self.log_dir = Path(log_dir) / f"{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}_tspi{train_steps_per_iter}_bs{buffer_size}_wr{w_regret}_wn{w_novelty}_wp{w_progress}_temp{temperature}_sth{s_threshold}"
         self.log_dir.mkdir(parents=True, exist_ok=True)
 
     # ---------------------------------------------------------------------- #
@@ -62,6 +62,10 @@ class Trainer:
 
             print("=" * 50)
             print(f"[ITERATION {it}]")
+            
+            score_snapshot = self.teacher.get_score_snapshot()
+            with open(self.log_dir / f"score_snapshot_iter{it}.json", "w") as f:
+                json.dump(score_snapshot, f, indent=4)
 
             if random.random() < 0.5:
                 # ---------------------------
@@ -82,7 +86,7 @@ class Trainer:
                 # ---------------------------
                 # 3) Compute score of layout, and add to buffer
                 # ---------------------------
-                score = self.teacher.compute_score(layout)
+                score = self.teacher.compute_score(layout, [avg_return])
                 if score >= self.s_threshold:
                     print(f"[Teacher] Adding layout {layout} to buffer with score {score:.2f}")
                     self.teacher.update_after_episode_wo_mutate(layout, avg_return)

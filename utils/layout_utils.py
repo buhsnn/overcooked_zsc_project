@@ -4,27 +4,121 @@ import random
 import numpy as np
 
 
+"""
+asymmetric_advantages
+bottleneck
+centre_objects
+centre_pots
+coordination_ring
+corridor
+counter_circuit_o_1order
+cramped_room
+five_by_five
+forced_coordination
+large_room
+m_shaped_s
+multiplayer_schelling
+old_dynamics_cook_test
+old_dynamics_put_test
+random0
+random3
+scenario1_s
+scenario2
+scenario2_s
+scenario3
+scenario4
+schelling
+schelling_s
+simple_o
+small_corridor
+tutorial_0
+unident
+"""
+
+####################### Full Set ######################### 
+
 # List of available layouts in Overcooked-AI
 AVAILABLE_LAYOUTS = [
-    "cramped_room",
     "asymmetric_advantages",
+    "bottleneck",
+    "centre_objects",
     "coordination_ring",
+    "corridor",
+    "counter_circuit_o_1order",
+    "five_by_five",
     "forced_coordination",
+    "large_room",
+    "m_shaped_s",
+    "random0",
+    "random3",
+    "scenario1_s",
+    "scenario2",
+    "scenario2_s",
+    "scenario3",
+    "scenario4",
+    "schelling_s",
+    "simple_o",
+    "small_corridor",
+    "tutorial_0",
+    "unident",
 ]
 
 EVAL_LAYOUTS = [
-    "counter_circuit_o_1order",
+    "centre_pots",
+    "cramped_room",
+    "schelling",
 ]
 
 # Approximate "optimal" value per layout (for regret).
 # You can adjust these values later.
 APPROX_OPTIMAL_RETURN = {
-    "cramped_room": 200,
-    "asymmetric_advantages": 200,
-    "coordination_ring": 200,
-    "forced_coordination": 200,
-    "counter_circuit_o_1order": 200,
+    "asymmetric_advantages" : 200,
+    "bottleneck" : 200,
+    "centre_objects" : 200,
+    "coordination_ring" : 200,
+    "corridor" : 200,
+    "five_by_five" : 200,
+    "forced_coordination" : 200,
+    "large_room" : 200,
+    "m_shaped_s" : 200,
+    "random0" : 200,
+    "random3" : 200,
+    "scenario1_s" : 200,
+    "scenario2" : 200,
+    "scenario2_s" : 200,
+    "scenario3" : 200,
+    "scenario4" : 200,
+    "schelling" : 200,
+    "schelling_s" : 200,
+    "simple_o" : 200,
+    "small_corridor" : 200,
+    "tutorial_0" : 200,
+    "unident" : 200,
 }
+
+
+####################### Minimal Set ######################### 
+
+# AVAILABLE_LAYOUTS = [
+#     "cramped_room",
+#     "asymmetric_advantages",
+#     "coordination_ring",
+#     "forced_coordination",
+# ]
+
+# EVAL_LAYOUTS = [
+#     "counter_circuit_o_1order",
+# ]
+
+# # Approximate "optimal" value per layout (for regret).
+# # You can adjust these values later.
+# APPROX_OPTIMAL_RETURN = {
+#     "cramped_room": 200,
+#     "asymmetric_advantages": 200,
+#     "coordination_ring": 200,
+#     "forced_coordination": 200,
+#     "counter_circuit_o_1order": 200,
+# }
 
 
 def one_hot_layout(layout_name: str) -> np.ndarray:  # TODO: rather than one-hot, use embedding
