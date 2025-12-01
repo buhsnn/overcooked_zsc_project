@@ -11,6 +11,7 @@ from student.train_ppo_student import StudentPPO
 from teacher.teacher_agent import TeacherAgent
 from utils.layout_utils import EVAL_LAYOUTS
 
+from overcooked_ai_py.visualization.state_visualizer import StateVisualizer
 
 class Trainer:
     """
