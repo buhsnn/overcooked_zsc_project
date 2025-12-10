@@ -1,0 +1,21 @@
+{
+    "grid":  """XXSXXXX
+                O   1 P
+                XXSDXXX
+                O   2 P
+                XXXXXXX""",
+
+    "start_all_orders": [
+        {
+            "ingredients": [
+                "onion",
+                "onion",
+                "onion"
+            ]
+        }
+    ],
+    "onion_value": 21,
+    "tomato_value": 13,
+    "onion_time": 15,
+    "tomato_time": 7
+}

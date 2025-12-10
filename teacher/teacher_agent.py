@@ -11,6 +11,7 @@ from utils.layout_utils import (
     AVAILABLE_LAYOUTS,
     APPROX_OPTIMAL_RETURN,
     one_hot_layout,
+    featurize_layout,
     mutate_layout,
 )
 
@@ -50,7 +51,7 @@ class LevelBuffer:
                 del self.levels[drop_key]
             rec = LevelRecord(
                 layout_name=layout_name,
-                embedding=one_hot_layout(layout_name),
+                embedding=featurize_layout(layout_name),
             )
             self.levels[layout_name] = rec
         return self.levels[layout_name]
@@ -146,7 +147,7 @@ class TeacherAgent:
         progresses = []
         for rec in recs:
             rec.regret = self._compute_regret(rec)
-            rec.novelty = self._compute_novelty(rec, recs)  # TODO: exclude self
+            rec.novelty = self._compute_novelty(rec, recs)
             rec.progress = self._compute_progress(rec)
 
             regrets.append(rec.regret)
@@ -212,7 +213,7 @@ class TeacherAgent:
         self.last_return[layout_name] = episode_return
 
         # Option: create a mutated layout and add it to the buffer
-        mutated = mutate_layout(layout_name)
+        mutated = mutate_layout(layout_name, self.buffer.levels)
         self.buffer.ensure_level(mutated)
     
     def update_after_episode_wo_mutate(self, layout_name: str, episode_return: float):
@@ -227,7 +228,7 @@ class TeacherAgent:
     def compute_score(self, layout_name, returns) -> float:
         rec = LevelRecord(
             layout_name=layout_name,
-            embedding=one_hot_layout(layout_name),
+            embedding=featurize_layout(layout_name),
             returns=returns,
         )
         rec.regret = self._compute_regret(rec)

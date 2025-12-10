@@ -9,9 +9,9 @@ from overcooked_ai_py.mdp.overcooked_mdp import OvercookedGridworld
 
 # ====================== CONFIG ======================
 BASE_GRAPHICS = os.path.join(os.path.dirname(__file__), "..", "graphics")
-OUTPUT_TXT    = os.path.join(os.path.dirname(__file__), "custom_layouts")
-OUTPUT_PNG    = os.path.join(os.path.dirname(__file__), "custom_layouts_png")
-MAP_COUNT     = 20
+OUTPUT_TXT    = os.path.join(os.path.dirname(__file__), "test_custom_layouts")
+OUTPUT_PNG    = os.path.join(os.path.dirname(__file__), "test_custom_layouts_png")
+MAP_COUNT     = 200
 TILE_SIZE     = 40
 
 
@@ -20,7 +20,7 @@ TILE_SPRITES = {
     "X": "counter.png",
     " ": "floor.png",
     "O": "onions.png",
-    "T": "tomatoes.png",
+    # "T": "tomatoes.png",
     "P": "pot.png",
     "D": "dishes.png",
     "S": "serve.png",
@@ -96,18 +96,18 @@ def validate_with_overcooked(grid):
     g = [list(row) for row in grid]
 
     # Find a free spot to place player '1'
-    placed = False
-    for y in range(1, H-1):
-        for x in range(1, W-1):
-            if g[y][x] == " ":
-                g[y][x] = "1"
-                placed = True
-                break
-        if placed:
-            break
+    # placed = False
+    # for y in range(1, H-1):
+    #     for x in range(1, W-1):
+    #         if g[y][x] == " ":
+    #             g[y][x] = "1"
+    #             placed = True
+    #             break
+    #     if placed:
+    #         break
 
-    if not placed:
-        return False
+    # if not placed:
+    #     return False
 
     # Try validation
     try:
@@ -125,6 +125,15 @@ TEMPLATE_SIZES = [
     (4, 5),  # cramped_room 4 rows, width 5
     (5, 8),  # counter_circuit 5 rows, width 8
 ]
+
+TEMPLATE_DICT = {
+    "grid": [],
+    "start_bonus_orders": [],
+    "start_all_orders" : [
+        { "ingredients" : ["onion", "onion", "onion"]}
+    ],
+    "rew_shaping_params": None
+}
 
 
 def generate_random_layout():
@@ -176,20 +185,67 @@ def generate_random_layout():
         wall_positions += [(0, x), (H-1, x)]
     for y in range(1, H-1):
         wall_positions += [(y, 0), (y, W-1)]
-
     random.shuffle(wall_positions)
 
-    # Place stations
-    grid[wall_positions.pop()[0]][wall_positions.pop()[1]] = "S"  # serve
-    grid[wall_positions.pop()[0]][wall_positions.pop()[1]] = "P"  # pot
-    grid[wall_positions.pop()[0]][wall_positions.pop()[1]] = "D"  # dishes
+    # # Place stations
+    # grid[wall_positions.pop()[0]][wall_positions.pop()[1]] = "S"  # serve
+    # grid[wall_positions.pop()[0]][wall_positions.pop()[1]] = "P"  # pot
+    # grid[wall_positions.pop()[0]][wall_positions.pop()[1]] = "D"  # dishes
 
     # Ingredients
     for _ in range(random.randint(1, 2)):
         y, x = wall_positions.pop()
-        grid[y][x] = random.choice(["O", "T"])
+        grid[y][x] = "O" #random.choice(["O", "T"])
+        
+    for _ in range(random.randint(1, 2)):
+        y, x = wall_positions.pop()
+        grid[y][x] = "S" #random.choice(["O", "T"])
+        
+    for _ in range(random.randint(1, 2)):
+        y, x = wall_positions.pop()
+        grid[y][x] = "P" #random.choice(["O", "T"])    
+        
+    for _ in range(random.randint(1, 2)):
+        y, x = wall_positions.pop()
+        grid[y][x] = "D" #random.choice(["O", "T"])    
+    
+    
+    for i in range(1, 3) :
+        placed = False
+        for x in range(1, W-1) :
+            for y in range(1, H-1) :
+                if placed :
+                    break
+                if grid[y][x] == " " :
+                    grid[y][x] = str(i)
+                    placed = True
+                    
+            
 
     return ["".join(row) for row in grid]
+
+
+def save_map_pretty(config: dict, path: str):
+    grid = config["grid"]
+    other = {k: v for k, v in config.items() if k != "grid"}
+
+    other_pretty = json.dumps(other, indent=4, ensure_ascii=False)
+
+    other_pretty = (
+        other_pretty
+        .replace("null", "None")
+        .replace("true", "True")
+        .replace("false", "False")
+    )
+
+    result = "{\n"
+    result += f'    "grid":  """{grid}""",\n'
+
+    result += other_pretty[1:]  
+
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(result)
+
 
 
 # ================================================================
@@ -227,9 +283,14 @@ def main():
         generated += 1
 
         # Write txt
-        with open(os.path.join(OUTPUT_TXT, f"{name}.layout"), "w") as f:
-            for row in grid:
-                f.write(row + "\n")
+        
+        TEMPLATE_DICT["grid"] = "\n                ".join(grid)
+        # with open(os.path.join(OUTPUT_TXT, f"{name}.layout"), "w") as f:
+        #     for row in grid:
+        #         f.write(row + "\n")
+
+        save_map_pretty(TEMPLATE_DICT, os.path.join(OUTPUT_TXT, f"{name}.layout"))
+
 
         # Write png
         render_png_from_grid(grid, sprites, os.path.join(OUTPUT_PNG, f"{name}.png"))
