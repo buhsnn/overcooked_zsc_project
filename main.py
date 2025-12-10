@@ -21,7 +21,7 @@ if __name__ == "__main__":
     parser.add_argument("--train_steps_per_iter", type=int, default=1_000, help="Training steps per iteration.")
     parser.add_argument("--buffer_size", type=int, default=20, help="Teacher buffer size.")
     parser.add_argument("--w_regret", type=float, default=0.01, help="Weight for regret.")
-    parser.add_argument("--w_novelty", type=float, default=0.5, help="Weight for novelty.")
+    parser.add_argument("--w_novelty", type=float, default=0.03, help="Weight for novelty.")
     parser.add_argument("--w_progress", type=float, default=-0.1, help="Weight for student progress.")
     parser.add_argument("--temperature", type=float, default=1.0, help="Temperature for sampling.")
     parser.add_argument("--s_threshold", type=float, default=2.0, help="Score threshold for adding layouts to buffer.")
