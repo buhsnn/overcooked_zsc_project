@@ -1,33 +1,39 @@
 from utils import *
 from tqdm import tqdm
 
-LAYOUTS = [
-    "asymmetric_advantages",
-    "bottleneck",
-    "centre_objects",
-    "coordination_ring",
-    "corridor",
-    "five_by_five",
-    "forced_coordination",
-    "large_room",
-    "m_shaped_s",
-    "random0",
-    "random3",
-    "scenario1_s",
-    "scenario2",
-    "scenario2_s",
-    "scenario3",
-    "schelling_s",
-    "simple_o",
-    "tutorial_0",
-    "unident",
-    "centre_pots",
-    "cramped_room",
-    "schelling",
-    "small_corridor",
-    "counter_circuit_o_1order",
-    "scenario4",
-]
+# LAYOUTS = [
+#     "asymmetric_advantages",
+#     "bottleneck",
+#     "centre_objects",
+#     "coordination_ring",
+#     "corridor",
+#     "five_by_five",
+#     "forced_coordination",
+#     "large_room",
+#     "m_shaped_s",
+#     "random0",
+#     "random3",
+#     "scenario1_s",
+#     "scenario2",
+#     "scenario2_s",
+#     "scenario3",
+#     "schelling_s",
+#     "simple_o",
+#     "tutorial_0",
+#     "unident",
+#     "centre_pots",
+#     "cramped_room",
+#     "schelling",
+#     "small_corridor",
+#     "counter_circuit_o_1order",
+#     "scenario4",
+# ]
+
+
+train_layout_path = "/media/yujin/AI611/overcooked_zsc_project/utils/TRAIN_LAYOUTS.txt"
+
+with open(train_layout_path, "r") as f:
+    LAYOUTS = [line.strip() for line in f.readlines()]
 
 
 swap_list = [
