@@ -1,0 +1,87 @@
+_wandb:
+    value:
+        cli_version: 0.23.0
+        e:
+            cgp26oh0v5kuzptcv0gxd52mr8uhobf4:
+                args:
+                    - with
+                    - seeds=[0]
+                    - layout_name=coordination_ring
+                    - clip_param=0.069
+                    - gamma=0.975
+                    - grad_clip=0.359
+                    - kl_coeff=0.156
+                    - lmbda=0.5
+                    - lr=1.6e-4
+                    - num_training_iters=650
+                    - old_dynamics=True
+                    - reward_shaping_horizon=5000000
+                    - use_phi=False
+                    - vf_loss_coeff=9.33e-3
+                    - results_dir=reproduced_results/ppo_sp_coordination_ring
+                codePath: src/human_aware_rl/ppo/ppo_rllib_client.py
+                codePathLocal: ppo_rllib_client.py
+                cpu_count: 10
+                cpu_count_logical: 20
+                cudaVersion: "12.2"
+                disk:
+                    /:
+                        total: "982820896768"
+                        used: "877456195584"
+                email: yujinbae@kaist.ac.kr
+                executable: /home/user/anaconda3/envs/yujin_overcooked/bin/python
+                git:
+                    commit: 739950a079cdaed5a44fcc662efc40244c205d06
+                    remote: https://github.com/HumanCompatibleAI/overcooked_ai.git
+                gpu: NVIDIA GeForce RTX 3090
+                gpu_count: 4
+                gpu_nvidia:
+                    - architecture: Ampere
+                      cudaCores: 10496
+                      memoryTotal: "25769803776"
+                      name: NVIDIA GeForce RTX 3090
+                      uuid: GPU-e235914a-fffe-f575-1ec4-1c4da051137c
+                    - architecture: Ampere
+                      cudaCores: 10496
+                      memoryTotal: "25769803776"
+                      name: NVIDIA GeForce RTX 3090
+                      uuid: GPU-d187f525-08c8-9188-36bb-01089db97bb8
+                    - architecture: Ampere
+                      cudaCores: 10496
+                      memoryTotal: "25769803776"
+                      name: NVIDIA GeForce RTX 3090
+                      uuid: GPU-5384b774-958c-5556-012e-25943677bd60
+                    - architecture: Ampere
+                      cudaCores: 10496
+                      memoryTotal: "25769803776"
+                      name: NVIDIA GeForce RTX 3090
+                      uuid: GPU-ec9af161-5ac0-4075-b803-3f0ce1b737d5
+                host: user-System-Product-Name
+                memory:
+                    total: "269923893248"
+                os: Linux-5.15.0-139-generic-x86_64-with-glibc2.31
+                program: /media/yujin/AI611/overcooked_ai/src/human_aware_rl/ppo/ppo_rllib_client.py
+                python: CPython 3.10.12
+                root: /media/yujin/AI611/overcooked_ai/src/human_aware_rl/ppo
+                startedAt: "2025-11-28T03:37:44.636754Z"
+                writerId: cgp26oh0v5kuzptcv0gxd52mr8uhobf4
+        m: []
+        python_version: 3.10.12
+        t:
+            "1":
+                - 2
+                - 3
+                - 30
+                - 52
+            "2":
+                - 2
+                - 3
+                - 30
+                - 52
+            "3":
+                - 17
+                - 35
+            "4": 3.10.12
+            "5": 0.23.0
+            "12": 0.23.0
+            "13": linux-x86_64
