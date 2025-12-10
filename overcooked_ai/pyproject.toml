@@ -28,7 +28,10 @@ dependencies = [
 harl = [
     "ipykernel",
     "ray[rllib,tune]==2.2",
+<<<<<<< HEAD
     "pydantic<2",
+=======
+>>>>>>> origin/Dev_Daehyun
     "dm-tree",
     "lz4",
     "tensorflow[and-cuda]==2.19.0",

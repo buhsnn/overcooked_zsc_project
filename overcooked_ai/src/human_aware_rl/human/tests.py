@@ -8,9 +8,12 @@ import unittest
 import numpy as np
 from numpy.testing._private.utils import assert_raises
 
+<<<<<<< HEAD
 import sys
 sys.path.append('/media/yujin/AI611/overcooked_ai/src/')
 
+=======
+>>>>>>> origin/Dev_Daehyun
 from human_aware_rl.human.process_dataframes import (
     csv_to_df_pickle,
     get_trajs_from_data,

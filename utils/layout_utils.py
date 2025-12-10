@@ -2,6 +2,7 @@
 
 import random
 import numpy as np
+from env.overcooked_wrapper import OvercookedGym
 import json
 
 from overcooked_ai_py.utils import read_layout_dict, write_layout_dict
@@ -21,12 +22,20 @@ with open(approx_optimal_return_path, "r") as f:
     APPROX_OPTIMAL_RETURN = json.load(f)
 
 
-def one_hot_layout(layout_name: str) -> np.ndarray:  # TODO: rather than one-hot, use embedding
+def one_hot_layout(layout_name: str) -> np.ndarray:
     """Encode a layout as a simple one-hot vector for 'novelty'."""
     vec = np.zeros(len(AVAILABLE_LAYOUTS), dtype=float)
     if layout_name in AVAILABLE_LAYOUTS:
         idx = AVAILABLE_LAYOUTS.index(layout_name)
         vec[idx] = 1.0
+    return vec
+
+
+def featurize_layout(layout_name: str) -> np.ndarray:
+    """Encode a layout into a handcrafted feature vector for 'novelty'."""
+    vec_env = OvercookedGym(layout_name, horizon=400)
+    obs_p0, obs_p1 = vec_env.env.featurize_state_mdp(vec_env.env.state)
+    vec = np.concatenate([obs_p0.flatten(), obs_p1.flatten()])
     return vec
 
 def swap_1_and_2(grid_str: str) -> str:

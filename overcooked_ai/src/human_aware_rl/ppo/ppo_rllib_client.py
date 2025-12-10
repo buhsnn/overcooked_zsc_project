@@ -4,19 +4,25 @@ import warnings
 
 import numpy as np
 
+<<<<<<< HEAD
 # NumPy 2.0 removed legacy aliases like np.bool that some RLlib utilities still touch
 if not hasattr(np, "bool"):
     np.bool = bool  # type: ignore[attr-defined]
 
+=======
+>>>>>>> origin/Dev_Daehyun
 warnings.simplefilter("ignore")
 
 # environment variable that tells us whether this code is running on the server or not
 LOCAL_TESTING = os.getenv("RUN_ENV", "production") == "local"
+<<<<<<< HEAD
 WANDB_DISABLED = os.getenv("WANDB_DISABLED", "false").lower() in (
     "1",
     "true",
     "yes",
 )
+=======
+>>>>>>> origin/Dev_Daehyun
 
 # Sacred setup (must be before rllib imports)
 from sacred import Experiment
@@ -42,8 +48,11 @@ if os.path.exists("slack.json") and not LOCAL_TESTING:
 # Note: tensorflow and tensorflow dependent imports must also come after rllib imports
 # This is because rllib disables eager execution. Otherwise, it must be manually disabled
 from ray.tune.result import DEFAULT_RESULTS_DIR
+<<<<<<< HEAD
 import sys
 sys.path.append('/media/yujin/AI611/overcooked_ai/src/')
+=======
+>>>>>>> origin/Dev_Daehyun
 
 from human_aware_rl.imitation.behavior_cloning_tf2 import (
     BC_SAVE_DIR,
@@ -197,9 +206,12 @@ def my_config():
     # Whether to log training progress and debugging info
     verbose = True
 
+<<<<<<< HEAD
     # Whether to enable wandb logging (disabled automatically if WANDB_DISABLED env var is set)
     log_to_wandb = not WANDB_DISABLED
 
+=======
+>>>>>>> origin/Dev_Daehyun
     ### BC Params ###
     # path to pickled policy model for behavior cloning
     bc_model_dir = os.path.join(BC_SAVE_DIR, "default")
@@ -350,12 +362,16 @@ def my_config():
         "ray_params": ray_params,
         "resume_checkpoint_path": resume_checkpoint_path,
         "verbose": verbose,
+<<<<<<< HEAD
         "log_to_wandb": log_to_wandb,
+=======
+>>>>>>> origin/Dev_Daehyun
     }
 
 
 def run(params):
     run_name = params["experiment_name"]
+<<<<<<< HEAD
     wandb_module = None
     wandb_run = None
     if params.get("log_to_wandb"):
@@ -376,6 +392,13 @@ def run(params):
             wandb_run = None
     elif params["verbose"]:
         print("wandb logging disabled; set WANDB_DISABLED=false to re-enable.")
+=======
+    if params["verbose"]:
+        import wandb
+
+        wandb.init(project=WANDB_PROJECT, sync_tensorboard=True)
+        wandb.run.name = run_name
+>>>>>>> origin/Dev_Daehyun
     # Retrieve the tune.Trainable object that is used for the experiment
     trainer = gen_trainer_from_params(params)
     # Object to store training results in
@@ -397,8 +420,13 @@ def run(params):
 
     if params["verbose"]:
         print("saved trainer at", save_path)
+<<<<<<< HEAD
     if wandb_run is not None:
         wandb_module.finish(quiet=True)
+=======
+        # quiet = True so wandb doesn't log to console
+        wandb.finish(quiet=True)
+>>>>>>> origin/Dev_Daehyun
 
     return result
 
