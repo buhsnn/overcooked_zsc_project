@@ -212,7 +212,7 @@ class TeacherAgent:
         self.last_return[layout_name] = episode_return
 
         # Option: create a mutated layout and add it to the buffer
-        mutated = mutate_layout(layout_name)
+        mutated = mutate_layout(layout_name, self.buffer.levels)
         self.buffer.ensure_level(mutated)
     
     def update_after_episode_wo_mutate(self, layout_name: str, episode_return: float):

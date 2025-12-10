@@ -90,6 +90,7 @@ class Trainer:
                 score = self.teacher.compute_score(layout, [avg_return])
                 if score >= self.s_threshold:
                     print(f"[Teacher] Adding layout {layout} to buffer with score {score:.2f}")
+                    # self.teacher.update_after_episode(layout, avg_return)
                     self.teacher.update_after_episode_wo_mutate(layout, avg_return)
                 
             else:
@@ -112,7 +113,8 @@ class Trainer:
                 # ---------------------------
                 # 3) Teacher updates its stats
                 # ---------------------------
-                self.teacher.update_after_episode_wo_mutate(layout, avg_return)
+                self.teacher.update_after_episode(layout, avg_return)
+                # self.teacher.update_after_episode_wo_mutate(layout, avg_return)
                 
                 # TODO: After mid report, add mutation
                 # self.teacher.update_after_episode(layout, avg_return)
