@@ -1,4 +1,4 @@
-from overcooked_ai_py.utils import *
+from utils import *
 from tqdm import tqdm
 
 LAYOUTS = [
@@ -61,7 +61,7 @@ def swap_ODSP(grid_str: str, chars: list) -> str:
     present = {ch for ch in chars if ch in grid_str}
     if len(present) < 2:
         raise ValueError("no all 4 chars in the grid")
-    c1, c2 = valid_chars[0], valid_chars[1]
+    c1, c2 = chars[0], chars[1]
     print(f"Swapping {c1} <-> {c2}")
     return swap_chars(grid_str, c1, c2)
 
@@ -98,7 +98,6 @@ for layout_name in tqdm(LAYOUTS) :
                 grid_str = swap_1_and_2(grid_str)
             swap_pair = swap_list[i]
             new_grid_str = swap_ODSP(grid_str, swap_pair)
-
             new_layout_params = base_layout_params.copy()
             new_layout_params['grid'] = new_grid_str
             write_layout_dict(new_layout_name, new_layout_params)
