@@ -30,6 +30,9 @@ def one_hot_layout(layout_name: str) -> np.ndarray:
         vec[idx] = 1.0
     return vec
 
+def swap_1_and_2(grid_str: str) -> str:
+    rows = grid_str.split("\n")
+    rows = [list(r) for r in rows]  
 
 def featurize_layout(layout_name: str) -> np.ndarray:
     """Encode a layout into a handcrafted feature vector for 'novelty'."""

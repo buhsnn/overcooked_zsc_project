@@ -312,6 +312,20 @@ class StateVisualizer:
             result_surface = rendered_surface
 
         return result_surface
+    
+    def render_env(self, grid, save_path):
+        """
+        returns surface with rendered game state scaled to selected size,
+        decoupled from display_rendered_state function to make testing easier
+        """
+        pygame.init()
+        grid = grid or self.grid
+        assert grid
+        grid_surface = pygame.surface.Surface(self._unscaled_grid_pixel_size(grid))
+        self._render_grid(grid_surface, grid)
+
+        pygame.image.save(grid_surface, save_path)
+        return grid_surface
 
     @property
     def scale_by_factor(self):

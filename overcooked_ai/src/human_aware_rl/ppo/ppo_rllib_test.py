@@ -12,6 +12,8 @@ os.environ["RUN_ENV"] = "local"
 import numpy as np
 import tensorflow as tf
 
+import sys
+sys.path.append('/media/yujin/AI611/overcooked_ai/src/')
 from human_aware_rl.data_dir import DATA_DIR
 from human_aware_rl.imitation.behavior_cloning_tf2 import (
     get_bc_params,

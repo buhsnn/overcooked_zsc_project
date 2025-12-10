@@ -13,11 +13,7 @@ from pathlib import Path
 import numpy as np
 from numpy import nan
 
-<<<<<<< HEAD
-from overcooked_ai_py.static import LAYOUTS_DIR, LAYOUTS_M_DIR
-=======
-from overcooked_ai_py.static import LAYOUTS_DIR
->>>>>>> origin/Dev_Daehyun
+from static import LAYOUTS_DIR, LAYOUTS_M_DIR
 
 # I/O
 
@@ -70,7 +66,6 @@ def fix_filetype(path, filetype):
         return path + filetype
 
 
-<<<<<<< HEAD
 def save_map_pretty(config: dict, path: str):
     grid = config["grid"]
     other = {k: v for k, v in config.items() if k != "grid"}
@@ -93,8 +88,6 @@ def save_map_pretty(config: dict, path: str):
         f.write(result)
 
 
-=======
->>>>>>> origin/Dev_Daehyun
 def generate_temporary_file_path(
     file_name=None, prefix="", suffix="", extension=""
 ):
@@ -250,26 +243,20 @@ def profile(fnc):
 
 
 def read_layout_dict(layout_name):
-<<<<<<< HEAD
     if '_M' in layout_name :
         return load_dict_from_file(
             os.path.join(LAYOUTS_M_DIR, layout_name + ".layout")
         )
-=======
->>>>>>> origin/Dev_Daehyun
     return load_dict_from_file(
         os.path.join(LAYOUTS_DIR, layout_name + ".layout")
     )
 
-<<<<<<< HEAD
 def write_layout_dict(layout_name, layout_dict):
     if '_M' in layout_name :
         save_map_pretty(layout_dict, os.path.join(LAYOUTS_M_DIR, layout_name + ".layout"))
     else :
         save_map_pretty(layout_dict, os.path.join(LAYOUTS_DIR, layout_name + ".layout"))
 
-=======
->>>>>>> origin/Dev_Daehyun
 
 class classproperty(property):
     def __get__(self, cls, owner):

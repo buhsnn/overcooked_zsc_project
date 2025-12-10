@@ -11,12 +11,9 @@ import warnings
 import numpy as np
 import tensorflow as tf
 
-<<<<<<< HEAD
 import sys
 sys.path.append('/media/yujin/AI611/overcooked_ai/src/')
 
-=======
->>>>>>> origin/Dev_Daehyun
 from human_aware_rl.human.process_dataframes import get_trajs_from_data
 from human_aware_rl.imitation.behavior_cloning_tf2 import (
     BC_SAVE_DIR,

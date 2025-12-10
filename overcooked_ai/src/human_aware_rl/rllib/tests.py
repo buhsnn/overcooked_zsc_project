@@ -4,6 +4,12 @@ from math import isclose
 
 import numpy as np
 
+<<<<<<< HEAD
+=======
+import sys
+sys.path.append('/media/yujin/AI611/overcooked_ai/src/')
+
+>>>>>>> 34834b3a25976ec02ab1c0ef5ee31f0dfa03bc9c
 from human_aware_rl.rllib.rllib import OvercookedMultiAgent
 from human_aware_rl.rllib.utils import (
     get_required_arguments,
