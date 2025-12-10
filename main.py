@@ -11,15 +11,15 @@ from teacher.teacher_agent import TeacherAgent
 from training.trainer import Trainer
 
 if __name__ == "__main__":
-    # debugpy.listen(5678)
-    # print("Waiting for debugger attach...")
-    # debugpy.wait_for_client()
-    # print("Debugger attached.")
+    debugpy.listen(5678)
+    print("Waiting for debugger attach...")
+    debugpy.wait_for_client()
+    print("Debugger attached.")
     
     parser = argparse.ArgumentParser()
     parser.add_argument("--n_iterations", type=int, default=1000, help="Number of training iterations.")
     parser.add_argument("--train_steps_per_iter", type=int, default=1_000, help="Training steps per iteration.")
-    parser.add_argument("--buffer_size", type=int, default=10, help="Teacher buffer size.")
+    parser.add_argument("--buffer_size", type=int, default=500, help="Teacher buffer size.")
     parser.add_argument("--w_regret", type=float, default=0.01, help="Weight for regret.")
     parser.add_argument("--w_novelty", type=float, default=0.03, help="Weight for novelty.")
     parser.add_argument("--w_progress", type=float, default=-0.1, help="Weight for student progress.")

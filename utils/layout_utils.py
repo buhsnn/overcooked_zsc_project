@@ -8,9 +8,9 @@ import json
 from overcooked_ai_py.utils import read_layout_dict, write_layout_dict
 
 
-train_layout_path = "./TRAIN_LAYOUTS.txt"
-val_layout_path = "./VAL_LAYOUTS.txt"
-approx_optimal_return_path = "./APPROX_OPTIMAL_RETURN.json"
+train_layout_path = "utils/TRAIN_LAYOUTS.txt"
+val_layout_path = "utils/VAL_LAYOUTS.txt"
+approx_optimal_return_path = "utils/APPROX_OPTIMAL_RETURN.json"
 
 with open(train_layout_path, "r") as f:
     AVAILABLE_LAYOUTS = [line.strip() for line in f.readlines()]

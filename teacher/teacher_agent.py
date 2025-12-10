@@ -101,7 +101,7 @@ class TeacherAgent:
         self._init_buffer()
 
     def _init_buffer(self):
-        initial_layouts = AVAILABLE_LAYOUTS[:int(self.buffer.max_size * self.staleness_coeff)]  # can be extended later
+        initial_layouts = AVAILABLE_LAYOUTS[:int(len(AVAILABLE_LAYOUTS) * self.staleness_coeff)]  # can be extended later
         for name in initial_layouts:
             rec = self.buffer.ensure_level(name)
             # Initialize with a small fake return (0) to start
