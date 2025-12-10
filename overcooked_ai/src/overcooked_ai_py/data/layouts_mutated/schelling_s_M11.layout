@@ -1,9 +1,9 @@
 {
-    "grid":  """XSPOX
+    "grid":  """XPSDX
                 X 2 X
-                D   D
+                O   O
                 X 1 X
-                XOPSX""",
+                XDSPX""",
 
     "start_bonus_orders": [],
     "start_all_orders": [

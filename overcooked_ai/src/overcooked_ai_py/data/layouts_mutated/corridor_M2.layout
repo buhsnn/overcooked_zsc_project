@@ -1,5 +1,5 @@
 {
-    "grid":  """XXXXXDXXOXXXXX
+    "grid":  """XXXXXPXXDXXXXX
                 X  1  XX  2  X
                 X     XX     X
                 X  XXXXXXXX  X
@@ -7,7 +7,7 @@
                 X  XXXXXXXX  X
                 X     XX     X
                 X     XX     X
-                XXXXXSXXPPXXXX""",
+                XXXXXSXXOOXXXX""",
 
     "start_bonus_orders": [],
     "start_all_orders": [

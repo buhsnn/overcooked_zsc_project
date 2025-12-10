@@ -1,11 +1,11 @@
 {
     "grid":  """XXXPXXX
-                D    2D
+                O    2O
                 X     X
                 X     X
                 X     X
                 X1    X
-                XOXXXSX""",
+                XSXXXDX""",
 
     "start_bonus_orders": [],
     "start_all_orders": [

@@ -1,8 +1,8 @@
 {
-    "grid":  """XXDXXXX
-                S     D
-                O 2 1 X
-                XXXPXXX""",
+    "grid":  """XXPXXXX
+                S     P
+                D 2 1 X
+                XXXOXXX""",
 
     "start_bonus_orders": [],
     "start_all_orders": [

@@ -1,8 +1,8 @@
 {
     "grid":  """XXPXXXX
-                D   1 S
-                XXPOXXX
-                D   2 S
+                O   1 D
+                XXPSXXX
+                O   2 D
                 XXXXXXX""",
 
     "start_all_orders": [

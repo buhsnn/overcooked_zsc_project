@@ -1,9 +1,9 @@
 {
-    "grid":  """XXXPX
-                X 1 P
-                O2X X
-                D   X
-                XDSXX""",
+    "grid":  """XXXSX
+                X 1 S
+                D2X X
+                O   X
+                XOPXX""",
 
     "start_bonus_orders": [],
     "start_all_orders": [
