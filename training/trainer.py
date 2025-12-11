@@ -58,7 +58,7 @@ class Trainer:
         Run the loop teacher → student → feedback.
         """
         print("\n===== START TRAINING =====\n")
-
+        
         for it in range(self.n_iterations):
 
             print("=" * 50)
@@ -73,6 +73,10 @@ class Trainer:
                 # 1) Generate random layout
                 # ---------------------------
                 layout = self.teacher.generate_layout()
+                if layout is None:
+                    print("[Teacher] All layouts in buffer. Skipping random generation.")
+                    continue
+                
                 print(f"[Teacher] Generated layout: {layout}")
                 
                 # ---------------------------
@@ -116,9 +120,6 @@ class Trainer:
                 self.teacher.update_after_episode(layout, avg_return)
                 # self.teacher.update_after_episode_wo_mutate(layout, avg_return)
                 
-                # TODO: After mid report, add mutation
-                # self.teacher.update_after_episode(layout, avg_return)
-
             # ---------------------------
             # 4) Validation
             # ---------------------------

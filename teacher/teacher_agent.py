@@ -185,10 +185,13 @@ class TeacherAgent:
         """
         Choose a layout from layout pool.
         """
-        layout = random.choice(AVAILABLE_LAYOUTS)
-        while layout in list(self.buffer.levels.keys()):
-            layout = random.choice(AVAILABLE_LAYOUTS)
-        return layout            
+        layouts_shuffled = AVAILABLE_LAYOUTS.copy()
+        random.shuffle(layouts_shuffled)
+        
+        for layout in layouts_shuffled:
+            if layout not in self.buffer.levels.keys():
+                return layout
+        return None        
 
     def sample_layout(self) -> str:
         """
@@ -215,6 +218,7 @@ class TeacherAgent:
         # Option: create a mutated layout and add it to the buffer
         mutated = mutate_layout(layout_name, self.buffer.levels)
         self.buffer.ensure_level(mutated)
+        self._update_scores()
     
     def update_after_episode_wo_mutate(self, layout_name: str, episode_return: float):
         """Call this after training/evaluating the student on a layout."""
