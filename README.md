@@ -77,7 +77,7 @@ Optimal performance requires:
 
 # Experimental Setup
 
-![Results](Images/Hyperparameter.png)
+![Results](images/Hyperparameter.png)
 
 Student agent:
 - PPO (Stable Baselines3)
@@ -92,7 +92,7 @@ Training:
 Evaluation metric:
 - **Average episode return on unseen layouts**
 
-![Results](Images/Experimental_Setup.png)
+![Results](images/Experimental_Setup.png)
 
 ---
 
@@ -107,9 +107,9 @@ We compare against three curriculum strategies:
 Our approach:
 
 - **Curator-Guided ACCEL**
-![Results](Images/ACCEL_Curator.png)
+![Results](images/ACCEL_Curator.png)
 
-![Results](Images/Accel.png)
+![Results](images/Accel.png)
 
 
 ---
@@ -130,7 +130,7 @@ The Curator mechanism allows training to focus on environments that are:
 - diverse
 - currently learnable
 
-![Results](Images/ZeroShot.png)
+![Results](images/ZeroShot.png)
 
 ---
 
@@ -156,9 +156,9 @@ Stations include:
 Layouts are represented as ASCII grids.
 
 
-![Results](Images/LayoutGeneration.png)
+![Results](images/LayoutGeneration.png)
 
-![Results](Images/Evolution_Mutation.png)
+![Results](images/Evolution_Mutation.png)
 
 
 ---
