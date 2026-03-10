@@ -48,7 +48,7 @@ The curator samples environments using a **softmax distribution over scores**, e
 
 # Algorithm Overview
 
-![Results](images/Algorithm.png)
+![Results](images/Algortithm.png)
 
 
 This creates a **co-evolutionary curriculum** between the agent and generated environments.
